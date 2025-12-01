@@ -1,0 +1,43 @@
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.custom-tooltip {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-label {
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.tooltip-value {
+  color: #3b82f6;
+  margin: 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tooltip-consumption {
+  color: #6b7280;
+  margin: 4px 0 0 0;
+  font-size: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 15px;
+    margin: 15px 0;
+  }
+}

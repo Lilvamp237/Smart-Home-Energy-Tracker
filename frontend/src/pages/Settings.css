@@ -1,0 +1,392 @@
+.settings-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.settings-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.section-description {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  font-size: 15px;
+}
+
+.settings-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.setting-info {
+  flex: 1;
+}
+
+.setting-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.setting-description {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  border-color: #3b82f6;
+  background: #f9fafb;
+}
+
+.theme-toggle.dark {
+  background: #1f2937;
+  color: white;
+  border-color: #374151;
+}
+
+.toggle-icon {
+  font-size: 20px;
+}
+
+.appliance-config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.config-appliance-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.config-appliance-item:hover {
+  background: #f3f4f6;
+}
+
+.appliance-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.appliance-details {
+  flex: 1;
+}
+
+.appliance-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.appliance-specs {
+  font-size: 13px;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.appliance-status-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.appliance-status-badge[data-status="active"] {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.appliance-status-badge[data-status="idle"] {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.appliance-status-badge[data-status="offline"] {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.about-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.about-icon {
+  font-size: 48px;
+}
+
+.about-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.version-badge {
+  padding: 6px 12px;
+  background: #eff6ff;
+  color: #1e40af;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.about-description p {
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.feature-item {
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 32px;
+  margin-bottom: 0.5rem;
+}
+
+.feature-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.feature-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.tech-stack {
+  padding-top: 1.5rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.tech-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tech-tag {
+  padding: 6px 12px;
+  background: #eff6ff;
+  color: #1e40af;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.project-links {
+  padding-top: 1.5rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.links-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.project-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
+
+.project-link:hover {
+  background: #e5e7eb;
+  transform: translateX(4px);
+}
+
+.link-icon {
+  font-size: 24px;
+}
+
+.link-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.link-arrow {
+  font-size: 20px;
+  color: #6b7280;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-item {
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.status-online {
+  color: #10b981;
+}
+
+.settings-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+  text-align: center;
+}
+
+.settings-footer p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 1rem;
+  }
+
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .theme-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .about-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
