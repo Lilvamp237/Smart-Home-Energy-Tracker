@@ -13,6 +13,15 @@ ENV/
 instance/
 .webassets-cache
 
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# CSV Data Files
+*.csv
+!*_sample.csv
+
 # Node
 node_modules/
 npm-debug.log*
