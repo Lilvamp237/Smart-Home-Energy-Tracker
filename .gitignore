@@ -22,6 +22,11 @@ instance/
 *.csv
 !*_sample.csv
 
+# Model Files
+*.joblib
+*.pkl
+*.pickle
+
 # Node
 node_modules/
 npm-debug.log*
