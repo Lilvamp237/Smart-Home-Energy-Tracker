@@ -209,8 +209,8 @@ const Optimization = () => {
                   <div className="impact-item">
                     <div className="impact-icon">🏷️</div>
                     <div>
-                      <div className="impact-label">Rule Type</div>
-                      <div className="impact-value">{suggestion.rule.replace('_', ' ')}</div>
+                      <div className="impact-label">Category</div>
+                      <div className="impact-value">{suggestion.category || 'General'}</div>
                     </div>
                   </div>
                 </div>

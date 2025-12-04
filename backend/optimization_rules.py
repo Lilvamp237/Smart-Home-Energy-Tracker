@@ -156,7 +156,8 @@ def get_optimization_suggestions(current_usage_data):
         }]
     
     # Generate suggestions based on current usage and rules
-    suggestion_id = 1
+    # Group by rule + household to avoid exact duplicates but keep different households
+    rule_matches = {}
     
     for usage_record in current_usage_data:
         household_id = usage_record.get('household_id')
@@ -165,6 +166,7 @@ def get_optimization_suggestions(current_usage_data):
         
         # Check each rule against current usage
         for rule_result in rule_results:
+            rule_id = str(rule_result.rule)
             description = str(rule_result.description)
             impact = str(rule_result.impact)
             category = str(rule_result.category)
@@ -172,32 +174,50 @@ def get_optimization_suggestions(current_usage_data):
             
             # Only suggest if usage exceeds threshold
             if energy_kwh > threshold_kwh:
-                # Calculate potential savings
-                potential_savings_kwh = energy_kwh * (cost_multiplier - 1.0)
-                savings_percentage = ((cost_multiplier - 1.0) / cost_multiplier) * 100
+                # Create unique key: rule + household to keep suggestions for different households
+                match_key = f"{rule_id}_{household_id}"
                 
-                # Enhance description with specific data
-                enhanced_description = (
-                    f"{description} "
-                    f"Current usage: {energy_kwh:.3f} kWh. "
-                    f"Potential savings: {potential_savings_kwh:.3f} kWh ({savings_percentage:.1f}% cost reduction)."
-                )
-                
-                suggestions.append({
-                    'id': suggestion_id,
-                    'text': enhanced_description,
-                    'impact': impact,
-                    'category': category,
-                    'household_id': household_id,
-                    'current_usage_kwh': round(energy_kwh, 4),
-                    'threshold_kwh': round(threshold_kwh, 4),
-                    'time_slot': time_slot_name,
-                    'cost_multiplier': cost_multiplier,
-                    'potential_savings_kwh': round(potential_savings_kwh, 4),
-                    'timestamp': timestamp.isoformat() if hasattr(timestamp, 'isoformat') else str(timestamp)
-                })
-                
-                suggestion_id += 1
+                # Track only one suggestion per rule-household combination
+                if match_key not in rule_matches:
+                    rule_matches[match_key] = {
+                        'description': description,
+                        'impact': impact,
+                        'category': category,
+                        'threshold_kwh': threshold_kwh,
+                        'energy_kwh': energy_kwh,
+                        'household_id': household_id,
+                        'timestamp': timestamp
+                    }
+    
+    # Convert grouped matches to suggestions list
+    suggestion_id = 1
+    for match_key, match_data in rule_matches.items():
+        energy_kwh = match_data['energy_kwh']
+        potential_savings_kwh = energy_kwh * (cost_multiplier - 1.0)
+        savings_percentage = ((cost_multiplier - 1.0) / cost_multiplier) * 100 if cost_multiplier > 1.0 else 0
+        
+        # Enhance description with specific data
+        enhanced_description = (
+            f"{match_data['description']} "
+            f"Current usage: {energy_kwh:.3f} kWh. "
+            f"Potential savings: {potential_savings_kwh:.3f} kWh ({savings_percentage:.1f}% cost reduction)."
+        )
+        
+        suggestions.append({
+            'id': suggestion_id,
+            'text': enhanced_description,
+            'impact': match_data['impact'],
+            'category': match_data['category'],
+            'household_id': match_data['household_id'],
+            'current_usage_kwh': round(energy_kwh, 4),
+            'threshold_kwh': round(match_data['threshold_kwh'], 4),
+            'time_slot': time_slot_name,
+            'cost_multiplier': cost_multiplier,
+            'potential_savings_kwh': round(potential_savings_kwh, 4),
+            'timestamp': match_data['timestamp'].isoformat() if hasattr(match_data['timestamp'], 'isoformat') else str(match_data['timestamp'])
+        })
+        
+        suggestion_id += 1
     
     # If no high-usage detected, provide general efficiency tips
     if not suggestions:

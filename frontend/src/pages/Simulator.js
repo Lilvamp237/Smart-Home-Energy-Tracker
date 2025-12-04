@@ -32,6 +32,19 @@ const Simulator = () => {
       }
     } catch (error) {
       console.error('Error loading appliances:', error);
+      // Fallback to appliances from ontology if API fails
+      const ontologyAppliances = [
+        { id: 1, name: 'HVAC System', type: 'heating_cooling', powerRating: 3500, status: 'active' },
+        { id: 2, name: 'Electric Water Heater', type: 'appliance', powerRating: 4500, status: 'active' },
+        { id: 3, name: 'Washing Machine', type: 'appliance', powerRating: 500, status: 'idle' },
+        { id: 4, name: 'Dishwasher', type: 'appliance', powerRating: 1800, status: 'idle' },
+        { id: 5, name: 'Electric Vehicle', type: 'vehicle', powerRating: 7200, status: 'idle' },
+        { id: 6, name: 'Pool Pump', type: 'appliance', powerRating: 1500, status: 'idle' },
+        { id: 7, name: 'Battery Storage', type: 'storage', powerRating: 5000, status: 'active' },
+        { id: 8, name: 'Refrigerator', type: 'appliance', powerRating: 150, status: 'active' }
+      ];
+      setAppliances(ontologyAppliances);
+      setSelectedAppliance(ontologyAppliances[0].id);
     }
   };
 
@@ -177,18 +190,28 @@ const Simulator = () => {
         <div className="control-grid">
           {/* Appliance Selection */}
           <div className="control-group">
-            <label className="control-label">Select Appliance/Household</label>
+            <label className="control-label">Select Appliance</label>
             <select 
               className="control-select"
               value={selectedAppliance || ''}
-              onChange={(e) => setSelectedAppliance(parseInt(e.target.value))}
+              onChange={(e) => setSelectedAppliance(e.target.value ? parseInt(e.target.value) : null)}
             >
-              {appliances.map(app => (
-                <option key={app.id} value={app.id}>
-                  {app.name} ({(app.powerRating / 1000).toFixed(1)} kW)
-                </option>
-              ))}
+              {appliances.length === 0 ? (
+                <option value="">Loading appliances...</option>
+              ) : (
+                <>
+                  <option value="">-- Select an appliance --</option>
+                  {appliances.map(app => (
+                    <option key={app.id} value={app.id}>
+                      {app.name} ({(app.powerRating / 1000).toFixed(1)} kW)
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
+            {appliances.length > 0 && !selectedAppliance && (
+              <div className="control-helper">Choose an appliance to simulate energy usage</div>
+            )}
           </div>
 
           {/* Simulation Duration */}

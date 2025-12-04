@@ -33,8 +33,11 @@ const Dashboard = () => {
           getEnergyUsage(timeRange),
           getPredictions(24)
         ]);
+        
+        console.log('Dashboard API responses:', { consumption, usage, pred });
+        
         setCurrentConsumption(consumption);
-        setEnergyData(usage);
+        setEnergyData(Array.isArray(usage) && usage.length > 0 ? usage : mockEnergyUsage.hourly);
         setPredictions(pred);
       }
     } catch (error) {
@@ -50,9 +53,7 @@ const Dashboard = () => {
 
   const handleTimeRangeChange = (range) => {
     setTimeRange(range);
-    if (range === '24h') setEnergyData(mockEnergyUsage.hourly);
-    if (range === '7d') setEnergyData(mockEnergyUsage.daily);
-    if (range === '30d') setEnergyData(mockEnergyUsage.weekly);
+    // Don't set mock data here - let useEffect reload from API
   };
 
   if (loading) {
