@@ -9,6 +9,7 @@ const Navigation = () => {
     { path: '/', label: 'Dashboard', icon: '📊' },
     { path: '/appliances', label: 'Appliances', icon: '🔌' },
     { path: '/optimization', label: 'Optimization', icon: '💡' },
+    { path: '/simulator', label: 'Simulator', icon: '⚡' },
     { path: '/settings', label: 'Settings', icon: '⚙️' }
   ];
 

@@ -4,6 +4,7 @@ import Navigation from './components/Navigation';
 import Dashboard from './pages/Dashboard';
 import Appliances from './pages/Appliances';
 import Optimization from './pages/Optimization';
+import Simulator from './pages/Simulator';
 import Settings from './pages/Settings';
 import './App.css';
 
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/appliances" element={<Appliances />} />
             <Route path="/optimization" element={<Optimization />} />
+            <Route path="/simulator" element={<Simulator />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>

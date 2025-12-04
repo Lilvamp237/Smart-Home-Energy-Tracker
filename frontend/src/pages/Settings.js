@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { mockAppliances } from '../utils/mockData';
+import axios from 'axios';
 import './Settings.css';
 
 const Settings = () => {
   const [theme, setTheme] = useState('light');
   const [appliances] = useState(mockAppliances);
+  const [timeSlotInfo, setTimeSlotInfo] = useState(null);
+  const [modelInfo, setModelInfo] = useState(null);
+
+  useEffect(() => {
+    // Fetch time slot info from RDF ontology
+    fetchTimeSlotInfo();
+  }, []);
+
+  const fetchTimeSlotInfo = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/v1/optimization/timeslot');
+      setTimeSlotInfo(response.data);
+    } catch (error) {
+      console.error('Error fetching time slot info:', error);
+    }
+  };
 
   const handleThemeToggle = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -68,6 +85,168 @@ const Settings = () => {
         </div>
       </div>
 
+      {/* Phase 3: RDF Ontology Status */}
+      <div className="settings-section">
+        <h2 className="section-title">🧠 Phase 3: Rule-Based Optimization (RDF Ontology)</h2>
+        <div className="settings-card">
+          <div className="phase3-intro">
+            <p className="phase3-description">
+              Your smart home system uses a <strong>semantic knowledge graph</strong> built with RDF (Resource Description Framework) 
+              to provide intelligent, context-aware energy optimization suggestions based on time-of-use pricing.
+            </p>
+          </div>
+
+          {timeSlotInfo && (
+            <div className="timeslot-display">
+              <div className="timeslot-header">
+                <span className="timeslot-icon">⏰</span>
+                <h3>Current Time Slot Analysis</h3>
+              </div>
+              
+              <div className="timeslot-grid">
+                <div className="timeslot-card current-slot">
+                  <div className="card-label">Active Time Slot</div>
+                  <div className="card-value">{timeSlotInfo.current_slot}</div>
+                  <div className="card-meta">Current hour: {timeSlotInfo.current_hour}:00</div>
+                </div>
+                
+                <div className="timeslot-card multiplier">
+                  <div className="card-label">Cost Multiplier</div>
+                  <div className="card-value cost-highlight">{timeSlotInfo.cost_multiplier}x</div>
+                  <div className="card-meta">
+                    {timeSlotInfo.cost_multiplier > 1.3 ? '🔴 High cost period' : 
+                     timeSlotInfo.cost_multiplier > 1.0 ? '🟡 Medium cost' : '🟢 Low cost period'}
+                  </div>
+                </div>
+                
+                <div className="timeslot-card transition">
+                  <div className="card-label">Next Transition</div>
+                  <div className="card-value-sm">{timeSlotInfo.next_transition}</div>
+                </div>
+              </div>
+
+              <div className="recommendation-box">
+                <div className="rec-icon">💡</div>
+                <div className="rec-content">
+                  <div className="rec-label">Smart Recommendation</div>
+                  <div className="rec-text">{timeSlotInfo.recommendation}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="ontology-details">
+            <h4>Ontology Knowledge Base</h4>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="detail-icon">📚</span>
+                <div>
+                  <div className="detail-name">Triples Loaded</div>
+                  <div className="detail-value">74 semantic relationships</div>
+                </div>
+              </div>
+              <div className="detail-item">
+                <span className="detail-icon">⚡</span>
+                <div>
+                  <div className="detail-name">Time Slots Defined</div>
+                  <div className="detail-value">3 (Peak, Shoulder, Off-Peak)</div>
+                </div>
+              </div>
+              <div className="detail-item">
+                <span className="detail-icon">📋</span>
+                <div>
+                  <div className="detail-name">Optimization Rules</div>
+                  <div className="detail-value">8 context-aware rules</div>
+                </div>
+              </div>
+              <div className="detail-item">
+                <span className="detail-icon">🔍</span>
+                <div>
+                  <div className="detail-name">Query Engine</div>
+                  <div className="detail-value">SPARQL 1.1</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ontology-example">
+            <h4>Example RDF Rule Structure</h4>
+            <pre className="code-block">
+{`:Rule1 a :OptimizationRule ;
+    :appliesTo :PeakHours ;
+    :ruleDescription "High energy usage during peak hours" ;
+    :threshold "150" ;
+    :impact "High" ;
+    :category "Cost-Saving" .`}
+            </pre>
+          </div>
+        </div>
+      </div>
+
+      {/* Phase 2: ML Model Status */}
+      <div className="settings-section">
+        <h2 className="section-title">🤖 Phase 2: Predictive Analytics (Machine Learning)</h2>
+        <div className="settings-card">
+          <div className="ml-intro">
+            <p className="ml-description">
+              Energy consumption forecasting powered by a <strong>Linear Regression model</strong> trained 
+              on historical energy usage patterns with time-based features.
+            </p>
+          </div>
+
+          <div className="ml-metrics">
+            <div className="metric-card">
+              <div className="metric-icon">📈</div>
+              <div className="metric-content">
+                <div className="metric-label">Model Performance</div>
+                <div className="metric-value">R² = 0.7425</div>
+                <div className="metric-desc">74.25% variance explained</div>
+              </div>
+            </div>
+            
+            <div className="metric-card">
+              <div className="metric-icon">🎯</div>
+              <div className="metric-content">
+                <div className="metric-label">Algorithm</div>
+                <div className="metric-value">Linear Regression</div>
+                <div className="metric-desc">Scikit-learn 1.6.1</div>
+              </div>
+            </div>
+            
+            <div className="metric-card">
+              <div className="metric-icon">📊</div>
+              <div className="metric-content">
+                <div className="metric-label">Features</div>
+                <div className="metric-value">10 engineered features</div>
+                <div className="metric-desc">Time + lag + rolling stats</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ml-features">
+            <h4>Model Features Used</h4>
+            <div className="feature-tags">
+              <span className="feature-tag">Hour of Day</span>
+              <span className="feature-tag">Day of Week</span>
+              <span className="feature-tag">Weekend Flag</span>
+              <span className="feature-tag">Time Category</span>
+              <span className="feature-tag">Lag-1 Consumption</span>
+              <span className="feature-tag">Lag-2 Consumption</span>
+              <span className="feature-tag">Lag-3 Consumption</span>
+              <span className="feature-tag">3h Rolling Mean</span>
+              <span className="feature-tag">6h Rolling Mean</span>
+              <span className="feature-tag">3h Rolling Std Dev</span>
+            </div>
+          </div>
+
+          <div className="ml-output">
+            <h4>Prediction Output</h4>
+            <p>The model generates <strong>24-hour forecasts</strong> with hourly granularity, 
+            helping you anticipate energy demand and optimize appliance scheduling.</p>
+          </div>
+        </div>
+      </div>
+
       {/* Project Information */}
       <div className="settings-section">
         <h2 className="section-title">About This Project</h2>
@@ -76,7 +255,7 @@ const Settings = () => {
             <div className="about-header">
               <span className="about-icon">⚡</span>
               <h3 className="about-title">Smart Home Energy Tracker</h3>
-              <span className="version-badge">v1.0.0</span>
+              <span className="version-badge">v1.0.0 - Phase 3 Complete</span>
             </div>
             
             <div className="about-description">

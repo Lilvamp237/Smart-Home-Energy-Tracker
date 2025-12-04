@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [predictions, setPredictions] = useState(null);
   const [timeRange, setTimeRange] = useState('24h');
   const [loading, setLoading] = useState(true);
-  const [useMockData] = useState(true); // Toggle this for real API
+  const [useMockData] = useState(false); // Toggle this for real API
 
   useEffect(() => {
     loadDashboardData();

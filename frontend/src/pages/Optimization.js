@@ -8,7 +8,7 @@ const Optimization = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
-  const [useMockData] = useState(true);
+  const [useMockData] = useState(false);
 
   useEffect(() => {
     loadSuggestions();
