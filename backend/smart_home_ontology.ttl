@@ -1,0 +1,92 @@
+@prefix : <http://smartenergy.org/ontology#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Time Slots Definition
+:PeakHours a :TimeSlot ;
+    :slotName "Peak Hours" ;
+    :startTime "17:00"^^xsd:time ;
+    :endTime "21:00"^^xsd:time ;
+    :costMultiplier "1.5"^^xsd:decimal ;
+    rdfs:comment "High-cost electricity period during evening hours" .
+
+:ShoulderHours a :TimeSlot ;
+    :slotName "Shoulder Hours" ;
+    :startTime "07:00"^^xsd:time ;
+    :endTime "17:00"^^xsd:time ;
+    :costMultiplier "1.2"^^xsd:decimal ;
+    rdfs:comment "Medium-cost electricity period during day hours" .
+
+:OffPeakHours a :TimeSlot ;
+    :slotName "Off-Peak Hours" ;
+    :startTime "21:00"^^xsd:time ;
+    :endTime "07:00"^^xsd:time ;
+    :costMultiplier "1.0"^^xsd:decimal ;
+    rdfs:comment "Low-cost electricity period during night hours" .
+
+# Optimization Rules for High Consumption Appliances
+:Rule1 a :OptimizationRule ;
+    :appliesTo :PeakHours ;
+    :targetAppliance "High-Consumption Device" ;
+    :ruleDescription "High energy usage detected during peak hours. Consider shifting usage to off-peak hours (after 9 PM) to save up to 30% on electricity costs." ;
+    :impact "High" ;
+    :category "Cost-Saving" ;
+    :threshold "150"^^xsd:decimal .
+
+:Rule2 a :OptimizationRule ;
+    :appliesTo :PeakHours ;
+    :targetAppliance "HVAC System" ;
+    :ruleDescription "Air conditioning/heating running during peak hours. Pre-cool/heat during shoulder hours or reduce temperature setting by 2°C to lower costs." ;
+    :impact "High" ;
+    :category "Cost-Saving" ;
+    :threshold "200"^^xsd:decimal .
+
+:Rule3 a :OptimizationRule ;
+    :appliesTo :ShoulderHours ;
+    :targetAppliance "Washing Machine" ;
+    :ruleDescription "Consider running washing machine during off-peak hours for additional savings." ;
+    :impact "Medium" ;
+    :category "Cost-Saving" ;
+    :threshold "100"^^xsd:decimal .
+
+:Rule4 a :OptimizationRule ;
+    :appliesTo :PeakHours ;
+    :targetAppliance "Electric Water Heater" ;
+    :ruleDescription "Water heater active during expensive peak hours. Set timer to heat water during off-peak hours instead." ;
+    :impact "High" ;
+    :category "Cost-Saving" ;
+    :threshold "180"^^xsd:decimal .
+
+:Rule5 a :OptimizationRule ;
+    :appliesTo :ShoulderHours ;
+    :targetAppliance "Pool Pump" ;
+    :ruleDescription "Pool pump running during shoulder hours. Shift operation to off-peak hours for cost savings." ;
+    :impact "Medium" ;
+    :category "Cost-Saving" ;
+    :threshold "120"^^xsd:decimal .
+
+# General Energy Efficiency Rules
+:Rule6 a :OptimizationRule ;
+    :appliesTo :OffPeakHours ;
+    :targetAppliance "Battery Storage" ;
+    :ruleDescription "Off-peak hours - optimal time to charge battery storage systems for daytime use." ;
+    :impact "Medium" ;
+    :category "Efficiency" ;
+    :threshold "50"^^xsd:decimal .
+
+:Rule7 a :OptimizationRule ;
+    :appliesTo :PeakHours ;
+    :targetAppliance "Electric Vehicle" ;
+    :ruleDescription "Avoid charging EV during peak hours. Schedule charging for off-peak hours to reduce electricity costs by up to 40%." ;
+    :impact "High" ;
+    :category "Cost-Saving" ;
+    :threshold "300"^^xsd:decimal .
+
+:Rule8 a :OptimizationRule ;
+    :appliesTo :PeakHours ;
+    :targetAppliance "Dishwasher" ;
+    :ruleDescription "Dishwasher usage detected during peak pricing. Run during off-peak hours or use eco-mode to reduce consumption." ;
+    :impact "Low" ;
+    :category "Cost-Saving" ;
+    :threshold "80"^^xsd:decimal .

@@ -7,6 +7,13 @@ import os
 from datetime import datetime, timedelta
 import joblib
 
+# Import optimization module
+from optimization_rules import (
+    load_ontology_graph,
+    get_optimization_suggestions,
+    get_time_slot_info
+)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -275,9 +282,106 @@ def get_prediction():
             'message': str(e)
         }), 500
 
+# Utility function to get latest usage data for optimization
+def get_latest_usage_data(time_window_minutes=60):
+    """
+    Retrieve the latest energy readings within the specified time window.
+    
+    Args:
+        time_window_minutes (int): Time window in minutes (default: 60 minutes)
+    
+    Returns:
+        list: List of dictionaries with recent usage data
+    """
+    cutoff_time = datetime.now() - timedelta(minutes=time_window_minutes)
+    
+    # Query latest readings for all households
+    latest_readings = EnergyReading.query.filter(
+        EnergyReading.timestamp >= cutoff_time
+    ).order_by(EnergyReading.timestamp.desc()).limit(100).all()
+    
+    # Convert to dictionary format
+    usage_data = []
+    for reading in latest_readings:
+        usage_data.append({
+            'household_id': reading.household_id,
+            'energy_kwh': reading.energy_kwh,
+            'timestamp': reading.timestamp
+        })
+    
+    return usage_data
+
+@app.route('/api/v1/optimization/suggestions', methods=['GET'])
+def get_suggestions():
+    """
+    Get energy optimization suggestions based on current usage patterns
+    and RDF ontology rules.
+    
+    Query Parameters:
+    - time_window (optional): Minutes of historical data to analyze (default: 60)
+    
+    Returns:
+        JSON with optimization suggestions
+    """
+    try:
+        # Get time window parameter (default: 60 minutes)
+        time_window = request.args.get('time_window', default=60, type=int)
+        
+        # Retrieve latest usage data
+        current_usage = get_latest_usage_data(time_window)
+        
+        if not current_usage:
+            return jsonify({
+                'message': 'No recent usage data available',
+                'time_window_minutes': time_window,
+                'suggestions': []
+            })
+        
+        # Generate optimization suggestions using rule engine
+        suggestions = get_optimization_suggestions(current_usage)
+        
+        # Get current time slot info
+        time_slot_info = get_time_slot_info()
+        
+        return jsonify({
+            'generated_at': datetime.now().isoformat(),
+            'time_window_minutes': time_window,
+            'analyzed_readings': len(current_usage),
+            'time_slot_info': time_slot_info,
+            'suggestion_count': len(suggestions),
+            'suggestions': suggestions
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'error': 'Suggestion generation failed',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/v1/optimization/timeslot', methods=['GET'])
+def get_current_timeslot():
+    """
+    Get information about the current time-of-use pricing slot.
+    
+    Returns:
+        JSON with current time slot details and cost multiplier
+    """
+    try:
+        time_slot_info = get_time_slot_info()
+        return jsonify(time_slot_info)
+    except Exception as e:
+        return jsonify({
+            'error': 'Failed to retrieve time slot information',
+            'message': str(e)
+        }), 500
+
 if __name__ == '__main__':
     # Initialize database
     init_db()
+    
+    # Load RDF ontology for optimization rules
+    print("\nLoading RDF ontology for optimization engine...")
+    load_ontology_graph()
     
     # Load prediction model
     load_predictor_model()
