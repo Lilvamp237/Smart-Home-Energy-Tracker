@@ -181,7 +181,7 @@ curl http://localhost:5000/
 
 **Technologies Used:**
 - Phase 1: Historical data from SQLite
-- Phase 2: ML predictions from trained model
+- Phase 2: ML predictions from trained models 
 
 ### 2. Appliances (`/appliances`)
 **Features:**
