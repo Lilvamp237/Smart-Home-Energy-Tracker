@@ -1,48 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import StatCard from '../components/common/StatCard';
 import EnergyUsageChart from '../components/charts/EnergyUsageChart';
-import { getCurrentConsumption, getEnergyUsage, getPredictions } from '../services/api';
+import { getCurrentConsumption, getEnergyUsage, getPredictions, checkBackendStatus } from '../services/api';
 import { mockCurrentConsumption, mockEnergyUsage, mockPredictions, mockQuickStats } from '../utils/mockData';
 import { formatCurrency, formatPower, formatDateTime } from '../utils/formatters';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const [currentConsumption, setCurrentConsumption] = useState(null);
   const [energyData, setEnergyData] = useState([]);
   const [predictions, setPredictions] = useState(null);
+  const [quickStats, setQuickStats] = useState(mockQuickStats);
   const [timeRange, setTimeRange] = useState('24h');
   const [loading, setLoading] = useState(true);
-  const [useMockData] = useState(false); // Toggle this for real API
+  const [backendAvailable, setBackendAvailable] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadDashboardData();
-  }, [timeRange]);
+    checkBackend();
+  }, []);
+
+  useEffect(() => {
+    if (backendAvailable !== null) {
+      loadDashboardData();
+    }
+  }, [timeRange, backendAvailable]);
+
+  const checkBackend = async () => {
+    const isAvailable = await checkBackendStatus();
+    setBackendAvailable(isAvailable);
+    console.log(`Backend ${isAvailable ? 'connected' : 'unavailable'} - using ${isAvailable ? 'real' : 'mock'} data`);
+  };
 
   const loadDashboardData = async () => {
     setLoading(true);
+    setError(null);
     try {
-      if (useMockData) {
-        // Use mock data for development
-        setCurrentConsumption(mockCurrentConsumption);
-        setEnergyData(mockEnergyUsage.hourly);
-        setPredictions(mockPredictions);
-      } else {
-        // Real API calls (when backend is ready)
-        const [consumption, usage, pred] = await Promise.all([
-          getCurrentConsumption(),
+      if (backendAvailable) {
+        // Use real API
+        const [usage, pred] = await Promise.all([
           getEnergyUsage(timeRange),
           getPredictions(24)
         ]);
-        setCurrentConsumption(consumption);
         setEnergyData(usage);
         setPredictions(pred);
+        
+        // Calculate quick stats from real data
+        const currentData = usage[usage.length - 1];
+        const totalConsumption = usage.reduce((sum, item) => sum + (item.consumption || 0), 0);
+        const totalCost = usage.reduce((sum, item) => sum + (item.cost || 0), 0);
+        
+        setQuickStats({
+          currentConsumption: currentData?.consumption * 12 || 0,
+          todayPredictedVsActual: pred?.summary?.difference || 0,
+          optimizationActions: 5,
+          todayCost: pred?.summary?.actualCostToday || totalCost,
+          weeklyAverage: totalConsumption / 7,
+          monthlyProjection: totalCost * 30
+        });
+      } else {
+        // Use mock data
+        setEnergyData(mockEnergyUsage.hourly);
+        setPredictions(mockPredictions);
+        setQuickStats(mockQuickStats);
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
+      setError('Failed to load dashboard data');
       // Fallback to mock data on error
-      setCurrentConsumption(mockCurrentConsumption);
       setEnergyData(mockEnergyUsage.hourly);
       setPredictions(mockPredictions);
+      setQuickStats(mockQuickStats);
     } finally {
       setLoading(false);
     }
@@ -71,6 +98,11 @@ const Dashboard = () => {
           <h1 className="dashboard-title">Energy Dashboard</h1>
           <p className="dashboard-subtitle">
             {formatDateTime(new Date())}
+            {backendAvailable !== null && (
+              <span className={`backend-status ${backendAvailable ? 'connected' : 'offline'}`}>
+                {' '}• {backendAvailable ? '🟢 Backend Connected' : '🔴 Using Mock Data'}
+              </span>
+            )}
           </p>
         </div>
         <button className="refresh-button" onClick={loadDashboardData}>
@@ -78,37 +110,43 @@ const Dashboard = () => {
         </button>
       </div>
 
+      {error && (
+        <div className="error-banner">
+          ⚠️ {error} - Displaying cached data
+        </div>
+      )}
+
       {/* Quick Stats */}
       <div className="stats-grid">
         <StatCard
           title="Current Consumption"
-          value={formatPower(mockQuickStats.currentConsumption)}
+          value={formatPower(quickStats.currentConsumption)}
           subtitle="Real-time usage"
           icon="⚡"
           color="blue"
         />
         <StatCard
           title="Today's Cost"
-          value={formatCurrency(mockQuickStats.todayCost)}
+          value={formatCurrency(quickStats.todayCost)}
           subtitle="Predicted vs Actual"
           icon="💰"
           color="green"
           trend={{
-            direction: mockQuickStats.todayPredictedVsActual > 0 ? 'up' : 'down',
-            value: formatCurrency(Math.abs(mockQuickStats.todayPredictedVsActual)),
+            direction: quickStats.todayPredictedVsActual > 0 ? 'up' : 'down',
+            value: formatCurrency(Math.abs(quickStats.todayPredictedVsActual)),
             label: 'difference'
           }}
         />
         <StatCard
           title="Weekly Average"
-          value={`${mockQuickStats.weeklyAverage} kWh`}
+          value={`${quickStats.weeklyAverage.toFixed(1)} kWh`}
           subtitle="Last 7 days"
           icon="📊"
           color="purple"
         />
         <StatCard
           title="Available Actions"
-          value={mockQuickStats.optimizationActions}
+          value={quickStats.optimizationActions}
           subtitle="Energy-saving suggestions"
           icon="💡"
           color="orange"

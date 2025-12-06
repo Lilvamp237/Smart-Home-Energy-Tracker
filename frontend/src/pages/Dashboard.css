@@ -28,6 +28,33 @@
   font-size: 16px;
 }
 
+.backend-status {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.backend-status.connected {
+  color: #10b981;
+}
+
+.backend-status.offline {
+  color: #f59e0b;
+}
+
+.error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .refresh-button {
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.3);

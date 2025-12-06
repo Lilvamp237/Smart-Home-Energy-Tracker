@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ApplianceBreakdownChart from '../components/charts/ApplianceBreakdownChart';
 import ApplianceComparisonChart from '../components/charts/ApplianceComparisonChart';
 import EnergyUsageChart from '../components/charts/EnergyUsageChart';
-import { getAppliances, getApplianceBreakdown, getApplianceUsage } from '../services/api';
+import { getAppliances, getApplianceBreakdown, getApplianceUsage, checkBackendStatus } from '../services/api';
 import { mockAppliances, mockApplianceBreakdown, mockEnergyUsage } from '../utils/mockData';
 import { formatEnergy, formatPower, getStatusColor } from '../utils/formatters';
 import './Appliances.css';
@@ -14,11 +14,22 @@ const Appliances = () => {
   const [applianceData, setApplianceData] = useState([]);
   const [timeRange, setTimeRange] = useState('7d');
   const [loading, setLoading] = useState(true);
-  const [useMockData] = useState(true);
+  const [backendAvailable, setBackendAvailable] = useState(false);
 
   useEffect(() => {
-    loadApplianceData();
+    checkBackend();
   }, []);
+
+  useEffect(() => {
+    if (backendAvailable !== null) {
+      loadApplianceData();
+    }
+  }, [backendAvailable]);
+
+  const checkBackend = async () => {
+    const isAvailable = await checkBackendStatus();
+    setBackendAvailable(isAvailable);
+  };
 
   useEffect(() => {
     if (selectedAppliance) {
@@ -29,11 +40,7 @@ const Appliances = () => {
   const loadApplianceData = async () => {
     setLoading(true);
     try {
-      if (useMockData) {
-        setAppliances(mockAppliances);
-        setBreakdown(mockApplianceBreakdown);
-        setSelectedAppliance(mockAppliances[0]);
-      } else {
+      if (backendAvailable) {
         const [applianceList, breakdownData] = await Promise.all([
           getAppliances(),
           getApplianceBreakdown()
@@ -43,6 +50,10 @@ const Appliances = () => {
         if (applianceList.length > 0) {
           setSelectedAppliance(applianceList[0]);
         }
+      } else {
+        setAppliances(mockAppliances);
+        setBreakdown(mockApplianceBreakdown);
+        setSelectedAppliance(mockAppliances[0]);
       }
     } catch (error) {
       console.error('Error loading appliance data:', error);
@@ -56,11 +67,17 @@ const Appliances = () => {
 
   const loadApplianceUsage = async (applianceId) => {
     try {
-      if (useMockData) {
-        setApplianceData(mockEnergyUsage.daily);
-      } else {
+      if (backendAvailable) {
         const usage = await getApplianceUsage(applianceId, timeRange);
-        setApplianceData(usage);
+        // Format backend data for the chart
+        const formattedData = usage.map(item => ({
+          day: new Date(item.timestamp).toLocaleDateString('en-US', { weekday: 'short' }),
+          consumption: item.consumption,
+          cost: item.cost
+        }));
+        setApplianceData(formattedData);
+      } else {
+        setApplianceData(mockEnergyUsage.daily);
       }
     } catch (error) {
       console.error('Error loading appliance usage:', error);
@@ -88,7 +105,14 @@ const Appliances = () => {
     <div className="appliances-page">
       <div className="page-header">
         <h1 className="page-title">Appliance Management</h1>
-        <p className="page-subtitle">Monitor and analyze individual appliance energy consumption</p>
+        <p className="page-subtitle">
+          Monitor and analyze individual appliance energy consumption
+          {backendAvailable !== null && (
+            <span className={`backend-status ${backendAvailable ? 'connected' : 'offline'}`}>
+              {' '}• {backendAvailable ? '🟢 Live Data' : '🔴 Demo Mode'}
+            </span>
+          )}
+        </p>
       </div>
 
       {/* Appliance Breakdown */}

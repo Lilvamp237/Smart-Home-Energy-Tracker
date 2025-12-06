@@ -21,6 +21,21 @@
   margin: 0;
 }
 
+.backend-status {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.backend-status.connected {
+  color: #10b981;
+}
+
+.backend-status.offline {
+  color: #f59e0b;
+}
+
 .section {
   margin-bottom: 2rem;
 }

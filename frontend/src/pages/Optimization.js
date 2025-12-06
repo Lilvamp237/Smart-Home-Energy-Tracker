@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getOptimizationSuggestions, updateSuggestionStatus } from '../services/api';
+import { getOptimizationSuggestions, updateSuggestionStatus, checkBackendStatus } from '../services/api';
 import { mockOptimizationSuggestions } from '../utils/mockData';
 import { formatCurrency, getPriorityColor } from '../utils/formatters';
 import './Optimization.css';
@@ -8,20 +8,31 @@ const Optimization = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
-  const [useMockData] = useState(false);
+  const [backendAvailable, setBackendAvailable] = useState(false);
 
   useEffect(() => {
-    loadSuggestions();
+    checkBackend();
   }, []);
+
+  useEffect(() => {
+    if (backendAvailable !== null) {
+      loadSuggestions();
+    }
+  }, [backendAvailable]);
+
+  const checkBackend = async () => {
+    const isAvailable = await checkBackendStatus();
+    setBackendAvailable(isAvailable);
+  };
 
   const loadSuggestions = async () => {
     setLoading(true);
     try {
-      if (useMockData) {
-        setSuggestions(mockOptimizationSuggestions);
-      } else {
+      if (backendAvailable) {
         const data = await getOptimizationSuggestions();
         setSuggestions(data);
+      } else {
+        setSuggestions(mockOptimizationSuggestions);
       }
     } catch (error) {
       console.error('Error loading suggestions:', error);
@@ -83,7 +94,14 @@ const Optimization = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Energy Optimization</h1>
-          <p className="page-subtitle">Actionable recommendations to reduce energy consumption and costs</p>
+          <p className="page-subtitle">
+            Actionable recommendations to reduce energy consumption and costs
+            {backendAvailable !== null && (
+              <span className={`backend-status ${backendAvailable ? 'connected' : 'offline'}`}>
+                {' '}• {backendAvailable ? '🟢 Live Data' : '🔴 Demo Mode'}
+              </span>
+            )}
+          </p>
         </div>
       </div>
 
