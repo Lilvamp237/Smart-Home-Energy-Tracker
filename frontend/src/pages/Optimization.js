@@ -44,7 +44,7 @@ const Optimization = () => {
 
   const handleStatusUpdate = async (suggestionId, newStatus) => {
     try {
-      if (!useMockData) {
+      if (backendAvailable) {
         await updateSuggestionStatus(suggestionId, newStatus);
       }
       

@@ -42,19 +42,18 @@ const Dashboard = () => {
           getPredictions(24)
         ]);
         
-        console.log('Dashboard API responses:', { consumption, usage, pred });
+        console.log('Dashboard API responses:', { usage, pred });
         
-        setCurrentConsumption(consumption);
         setEnergyData(Array.isArray(usage) && usage.length > 0 ? usage : mockEnergyUsage.hourly);
         setPredictions(pred);
         
         // Calculate quick stats from real data
-        const currentData = usage[usage.length - 1];
-        const totalConsumption = usage.reduce((sum, item) => sum + (item.consumption || 0), 0);
-        const totalCost = usage.reduce((sum, item) => sum + (item.cost || 0), 0);
+        const currentData = usage && usage.length > 0 ? usage[usage.length - 1] : null;
+        const totalConsumption = usage ? usage.reduce((sum, item) => sum + (item.consumption || 0), 0) : 0;
+        const totalCost = usage ? usage.reduce((sum, item) => sum + (item.cost || 0), 0) : 0;
         
         setQuickStats({
-          currentConsumption: currentData?.consumption * 12 || 0,
+          currentConsumption: currentData?.consumption ? currentData.consumption * 12 : 0,
           todayPredictedVsActual: pred?.summary?.difference || 0,
           optimizationActions: 5,
           todayCost: pred?.summary?.actualCostToday || totalCost,
